@@ -1,0 +1,33 @@
+.theme_header_style {
+    background: #951344 !important;
+    color: white !important;
+}
+.theme_btn.default, form .theme_btn {
+    background: #951344 !important;
+    color: white !important;
+    font-size: 15px !important;
+}
+.theme_header_style .brand-name {
+    color: white !important;
+}
+.theme_bg_color {
+    background: #951344;
+}
+table th, table td {
+    min-width: 100px;
+    white-space: pre-wrap;
+    padding: 6px 10px;
+    text-align: left;
+}
+table .ft {
+    color: #ff66a0;
+}
+table .fr {
+    color: #1bff81;
+}
+table .pr {
+    color: #ff8e2a;
+}
+#about {
+    color: #ff8e2a !important;
+}
