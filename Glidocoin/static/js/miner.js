@@ -1,7 +1,7 @@
 import * as jquery from "./jquery.min.js";
 
 let host = "https://glidocoin-miner.herokuapp.com";
-host = "";
+// host = ""; uncomment this to test on localhost
 
 if(typeof(EventSource) !== "undefined") {
     // Yes! Server-sent events support!
