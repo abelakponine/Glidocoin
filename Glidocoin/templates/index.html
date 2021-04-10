@@ -23,6 +23,16 @@
             <div class="">
                 <div class="row d-flex flex-wrap">
 
+                    <div class="flex-fill p-5 ml-3 mr-3 medium" style="background:#7c7cff;background:linear-gradient(to bottom, white -50%, #0000ac 150%, white 100%) !important;-webkit-linear-gradient(to bottom, white -50%, #0000ac 150%, white 100%) !important;font-size:15px;word-break:break-word;">
+                        <h2>Glidocoin Blockchain</h2>
+                        <b>Current Mining Reward: {{ Glidocoin.miningReward | floatformat:6 }} GCN <small>(every 10 seconds)</small></b>
+                        <p>
+                            <h6 style="line-height:2;"><span class="mr-2 font-weight-bold">My Wallet:</span> <span id="wallet_address" style="background:#e1d5c9;padding:10px;border-radius:10px;">{{ Glidocoin.myWallet.walletAddress }}</span></h6>
+                            <b>Balance: <span id="wallet_balance" style="padding:10px;">{{ Glidocoin.myBalance | floatformat:6 }} GCN</span></b>
+                            <small><b>No. of Registered Users: {{ Glidocoin.totalUsers }}</b></small>
+                        </p>
+                    </div>
+
                     <div class="flex-fill p-5 ml-3 mr-3 bg-white" style="min-width:45%">
                         <h6>Developed by <i class="fab fa-github"></i> <a href="https://github.com/abelakponine" target="_blank">Abel Akponine</a></h6>
                         <span><i class="fab fa-instagram"></i> <a href="https://instagram.com/kingabel.a" target="_blank">Kingabel.a</a></span>
@@ -50,15 +60,6 @@
                         </div>
                     </div>
 
-                    <div class="flex-fill p-5 ml-3 mr-3 medium" style="background:#abc8ff !important;font-size:15px;word-break:break-word;">
-                        <h2>Glidocoin Blockchain</h2>
-                        <b>Current Mining Reward: {{ Glidocoin.miningReward | floatformat:6 }} GCN <small>(every 10 seconds)</small></b>
-                        <p>
-                            <h6 style="line-height:2;"><span class="mr-2 font-weight-bold">My Wallet:</span> <span id="wallet_address" style="background:#e1d5c9;padding:10px;border-radius:10px;">{{ Glidocoin.myWallet.walletAddress }}</span></h6>
-                            <b>Balance: <span id="wallet_balance" style="padding:10px;">{{ Glidocoin.myBalance | floatformat:6 }} GCN</span></b>
-                            <small><b>No. of Registered Users: {{ Glidocoin.totalUsers }}</b></small>
-                        </p>
-                    </div>
                 </div>
                 <!-- Blocks -->
                 <div class="flex-fill py-5 ml-0 mr-0 medium no-bg" style="font-size:15px;">
