@@ -45,7 +45,8 @@ def startMainer(req, wallet_addr):
     print("")
     print(blockchain)
     myWallet = Glidocoin.myWallet
-
+    print(myWallet)
+    
     if (wallet_addr == myWallet['walletAddress']):
         blockchain.startMainer(myWallet)
     else:
