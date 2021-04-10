@@ -1,6 +1,6 @@
 import * as jquery from "./jquery.min.js";
 
-let host = "https://glidocoin-miner.herokuapp.com";
+let host = "https://glidocoin.herokuapp.com";
 // host = ""; uncomment this to test on localhost
 
 fetch(host+"/myWallet/", {

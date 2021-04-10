@@ -159,7 +159,7 @@ class Blockchain():
                             self.chain.append(block)
                             pendingBlocks.remove(block)
                             print("\033[1;96mBlock mined!\033[0m")
-                            print("\033[1;96mCurrent balance: \033[1;93m"+"{:.6f}".format(self.getBalanceOf(wallet['walletAddress']))+" GCN\033[0m ("+str(self.to_okies(self.getBalanceOf(wallet['walletAddress'])))+" Okies)")
+                            print("\033[1;96mMiner's balance: \033[1;93m"+"{:.6f}".format(self.getBalanceOf(wallet['walletAddress']))+" GCN\033[0m ("+str(self.to_okies(self.getBalanceOf(wallet['walletAddress'])))+" Okies)")
                             print("\033[1;96mSystem balance: \033[1;93m"+"{:.6f}".format(self.getBalanceOf(self.genesisAddress))+" GCN\033[0m ("+str(self.to_okies(self.getBalanceOf(wallet['walletAddress'])))+" Okies)\r\n")
                             print(self.genesisAddress)
 
