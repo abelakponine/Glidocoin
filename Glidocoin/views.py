@@ -75,7 +75,8 @@ def getBalanceOf(req, wallet_addr):
 
 @csrf_exempt
 def getWallet(req):
-    wallet = Glidocoin.wallets.findWallet("kingabel", "Exploxi2")
+    cred = json.loads(req.body.decode())['username']
+    wallet = Glidocoin.wallets.findWallet(cred['username'], cred['password'])
     if ('signature' in wallet):
         del wallet['signature']
     if ('password' in wallet):
