@@ -1,5 +1,8 @@
 import * as jquery from "./jquery.min.js";
 
+let host = "https://glidocoin-miner.herokuapp.com";
+host = "";
+
 if(typeof(EventSource) !== "undefined") {
     // Yes! Server-sent events support!
     // Some code.....
@@ -7,7 +10,8 @@ if(typeof(EventSource) !== "undefined") {
 
     var source = new EventSource("/balance/"+walletAddr);
     source.onmessage = function(event) {
-        let balance = event.data
+        let balance = Math.round((event.data) * 1000000)/1000000
+        console.log(Math.round((balance + Number.EPSILON) * 1000000)/1000000)
         $("#wallet_balance").html(balance+" GCN")
     };
 } else {
@@ -21,8 +25,8 @@ window.startMiner = (elem, walletAddr)=>{
     let elem2 = elem.nextElementSibling;
     $(elem2).css('background', 'rgb(230, 13, 60)');
     elem2.disabled = false;
-    $("#account_status").html("<b style='text-transform:capitalize'><small>Account status: &nbsp; Mining</small></b>");
-    $.get("https://glidocoin-miner.herokuapp.com/startMiner/"+walletAddr, (res)=>{
+    $("#account_status").html("<b style='text-transform:capitalize'><small>Account status: &nbsp; <b>Mining</b></small></b>");
+    $.get(host+"/startMiner/"+walletAddr, (res)=>{
         console.log(res)
     })
 }
@@ -33,13 +37,13 @@ window.stopMiner = (elem, walletAddr)=>{
     $(elem2).css('background', 'rgb(47, 47, 255)')
     elem2.disabled = false;
     $(elem2).find('i').hide(100)
-    $.get("https://glidocoin-miner.herokuapp.com/stopMiner/"+walletAddr, (res)=>{
+    $.get(host+"/stopMiner/"+walletAddr, (res)=>{
         console.log(res)
-        $("#account_status").html("<b style='text-transform:capitalize'><small>Account status: &nbsp; "+res+"</small></b>");
+        $("#account_status").html("<b style='text-transform:capitalize'><small>Account status: &nbsp; <b>"+res+"</b></small></b>");
     })
 }
 window.getBalanceOf = (walletAddr)=>{
-    $.get("https://glidocoin-miner.herokuapp.com/balance/"+walletAddr, (bal)=>{
+    $.get(host+"/balance/"+walletAddr, (bal)=>{
         console.log(bal)
     })
 }

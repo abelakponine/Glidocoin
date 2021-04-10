@@ -1,6 +1,9 @@
 import * as jquery from "./jquery.min.js";
 
-fetch("https://glidocoin-miner.herokuapp.com/myWallet/", {
+let host = "https://glidocoin-miner.herokuapp.com";
+host = "";
+
+fetch(host+"/myWallet/", {
     method: "POST",
     headers: {
         "Content-Type": "application/json"
@@ -14,13 +17,6 @@ fetch("https://glidocoin-miner.herokuapp.com/myWallet/", {
         $("#wallet_address").text(val['walletAddress'])
         $("#start_miner").attr("onclick", "startMiner(this, '"+val['walletAddress']+"')")
         $("#stop_miner").attr("onclick", "stopMiner(this, '"+val['walletAddress']+"')")
-        $("#account_status").html("<b style='text-transform:capitalize'><small>Account status: &nbsp; "+val['status']+"</small></b>");
+        $("#account_status").html("<b style='text-transform:capitalize'><small>Account status: &nbsp; <b>"+val['status']+"</b></small></b>");
     })
 })
-
-// $.post("/myWallet/", {
-//     username: "kingabel",
-//     password: "Exploxi2"
-// }, (res)=>{
-//     console.log("res:", res)
-// }, "json")

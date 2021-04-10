@@ -8,7 +8,6 @@ from .Modules.Glidocoin import Glidocoin
 import hashlib, ecdsa, json, datetime, random
 from django.views.decorators.csrf import csrf_exempt
 
-print(Glidocoin.status)
 
 blockchain = None
 
@@ -22,7 +21,6 @@ def init(req):
     Glidocoin.wallets = blockchain.getWallets()
     Glidocoin.wallets.createWallet("Abel Akponine", "17/04/1993", "kingabel", "Exploxi2")
     Glidocoin.myWallet = Glidocoin.wallets.findWallet("kingabel", "Exploxi2")
-    print("\r\n Checking...... \r\n")
     return HttpResponse(Glidocoin.status)
 
 # Create your views here.
@@ -38,7 +36,6 @@ def home(req):
     dict = {
         "Glidocoin": blockchain
     }
-    print(Glidocoin.myWallet)
     return render(req, 'index.html', dict)
 
 def startMainer(req, wallet_addr):
@@ -67,7 +64,7 @@ def getBalanceOf(req, wallet_addr):
 
     if (wallet_addr == myWallet['walletAddress']):
         balance = blockchain.getBalanceOf(myWallet['walletAddress'])
-        return HttpResponse("data:{:.2f}".format(balance)+"\n\n", content_type='text/event-stream')
+        return HttpResponse("data:{:.6f}".format(balance)+"\n\n", content_type='text/event-stream')
     else:
         print("Invalid Wallet")
     return HttpResponse("data:0", content_type='text/event-stream')

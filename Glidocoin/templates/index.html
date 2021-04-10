@@ -7,95 +7,123 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Glidocoin Blockchain</title>
     <link rel="stylesheet" href="{% static 'css/app.css' %}"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/">
     <script type="module" src="{% static 'js/initialize.js'%}" defer></script>
     <script type="module" src="{% static 'js/miner.js'%}" defer></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 <body style="font-family:arial;">
-    <header class="bg-dark" style="width:96%;padding:1% 2%;">
-        <h4 class="color-white" style="margin:6px 0;">Glidocoin</h4>
+    <header class="nav bg-dark" style="padding:1% 2%;">
+        <h4 class="text-white" style="margin:6px 0;">Glidocoin</h4>
     </header>
-    <div style="width:max-content;margin:20px auto;">
-        <h2>Glidocoin Blockchain</h2>
-        <b>Current Mining Reward: {{ Glidocoin.miningReward }} GCN <small>(every 5 mins)</small></b>
+    <div class="jumbotron jumbotron-fluid no-margin">
+        <div class="container-fluid">
+            <div class="">
+                <div class="row d-flex flex-wrap">
 
-        <p>
-            <h4>My Wallet: <span id="wallet_address" style="background:#fafafa;padding:10px;">{{ Glidocoin.myWallet.walletAddress }}</span></h4>
-            <h4>Balance: <span id="wallet_balance" style="padding:10px;">{{ Glidocoin.myBalance | floatformat:2 }} GCN</span></h4>
-            <small><h4>No. of Registered Users: {{ Glidocoin.totalUsers }}</h4></small>
-        </p>
+                    <div class="flex-fill p-5 ml-3 mr-3 bg-white" style="min-width:45%">
+                        <h6>Developed by <a href="https://github.com/abelakponine">Abel Akponine</a></h6>
+                        <br>
+                        <div class="miner-action">
+                            <button id="start_miner" class="btn no-border color-white" 
+                                style="background:rgb(47, 47, 255);padding:10px 8px !important;margin:4px;"
+                                onclick='startMiner(this, "{{ Glidocoin.myWallet.walletAddress }}")' {% if Glidocoin.myWallet.status == "mining" %} disabled {% endif %} >Start Mining <i class="fa fa-spinner fa-spin" style="display:none;"></i></button>
+                            <button id="stop_miner" class="btn no-border color-white" 
+                                style="background:rgb(230, 13, 60);padding:10px 8px !important;margin:4px;"
+                                onclick='stopMiner(this, "{{ Glidocoin.myWallet.walletAddress }}")' {% if Glidocoin.myWallet.status == "active" %} disabled {% endif %} >Stop Mining</button>
+                                <p id="account_status" style="font-family:arial;"><b style='text-transform:capitalize'><small>Account status: &nbsp; <b>{{Glidocoin.myWallet.status }}</b></small></b></p>
+                        </div>
+                        <hr/>
+                        <p>&nbsp;</p>
+                        <div>
+                            <form class="form d-flex flex-column" style="min-width:100%;">
+                                <input class="form-control py-4" placeholder="Enter Glidocoin Recipient Address">
+                                <input class="form-control py-4" type="number" placeholder="Amount">
+                                <span class="display-flex mt-3 margin-auto" style="width:350px;">
+                                    <button class="btn no-border color-white" style="background:rgb(18, 196, 33);padding:10px 8px !important;margin:4px;">Transfer</button>
+                                    <button class="btn no-border color-white" style="background:rgb(46, 46, 228);padding:10px 8px !important;margin:4px;">Deposit</button>
+                                </span>
+                            </form>
+                        </div>
+                    </div>
 
-        <div class="absolute" style="top:80px;left:20px;">
-            <button id="start_miner" class="btn no-border color-white" 
-                style="background:rgb(47, 47, 255);padding:10px 8px !important;margin:4px;"
-                onclick='startMiner(this, "{{ Glidocoin.myWallet.walletAddress }}")'>Start Mining <i class="fa fa-spinner fa-spin" style="display:none;"></i></button>
-            <button id="stop_miner" class="btn no-border color-white" 
-                style="background:rgb(230, 13, 60);padding:10px 8px !important;margin:4px;"
-                onclick='stopMiner(this, "{{ Glidocoin.myWallet.walletAddress }}")'>Stop Mining</button>
-                <p id="account_status" style="font-family:arial;"><b style='text-transform:capitalize'><small>Account status: &nbsp; {{Glidocoin.myWallet.status }}</small></b></p>
+                    <div class="flex-fill p-5 ml-3 mr-3 medium" style="background:#abc8ff !important;font-size:15px;word-break:break-word;">
+                        <h2>Glidocoin Blockchain</h2>
+                        <b>Current Mining Reward: {{ Glidocoin.miningReward | floatformat:6 }} GCN <small>(every 10 seconds)</small></b>
+                        <p>
+                            <h6 style="line-height:2;"><span class="mr-2 font-weight-bold">My Wallet:</span> <span id="wallet_address" style="background:#e1d5c9;padding:10px;border-radius:10px;">{{ Glidocoin.myWallet.walletAddress }}</span></h6>
+                            <b>Balance: <span id="wallet_balance" style="padding:10px;">{{ Glidocoin.myBalance | floatformat:6 }} GCN</span></b>
+                            <small><b>No. of Registered Users: {{ Glidocoin.totalUsers }}</b></small>
+                        </p>
+                    </div>
+                </div>
+                <!-- Blocks -->
+                <div class="flex-fill py-5 ml-0 mr-0 medium no-bg" style="font-size:15px;">
+                    <p>
+                        <button class="btn btn-primary" onclick="window.location.reload()">Refresh blocks</button>
+                    </p>
+                    <div class="col-sm-6" style="height:700px;overflow:hidden;overflow-y:auto;border-top:10px solid white;border-bottom:10px solid white;padding:0;scrollbar-color:white #e9ecef;">
+                        {% for block in Glidocoin.chain %}
+                            <div class="bg-white p-3 my-4" style="margin-top:0 !important;">
+                                <table class="table" style="max-width:600px;word-break:break-word;">
+                                    {% if block.index == 0 %}
+                                        <thead><tr><td colspan="2" style="border:0"><h5>Genesis Block</h5></td></tr></thead>
+                                    {% else %}
+                                        <thead><tr><td colspan="2" style="border:0"><h5>Block Index: {{block.index}}</h5></td></tr></thead>
+                                    {% endif %}
+                                        <tr><td><h6 class="d-inline ws-nowrap">Previous Hash: &emsp;</h6></td> <td>{{ block.previousHash }} </td></tr>
+                                        <td><h6 class="display-inline">Hash: &emsp;</h6></td> <td>{{ block.hash }} </td><tr>
+                                    {% with nTxn=block.transactions %}
+                                        <tr><td><h6 class="display-inline">No. of Transactions: &emsp;</h6></td> <td>{{ nTxn | length }} </td></tr>
+                                        <tr><td colspan="2"></td></tr>
+                                    {% endwith %}
+                                </table>
+                                <table style="max-width:600px;text-align:left;margin-top:10px;word-break:break-word;">
+                                    <thead>
+                                        <th class="inline-table" style="min-width:120px;margin-bottom:5px;">Transactions: </th>
+                                        <th class="inline-table" style="min-width:100px;margin-bottom:5px;"> Data </th>
+                                    </thead>
+                                        <tr></tr>
+                                        <tr>
+                                            {% for tnx in block.transactions %}
+                                                <tbody style="display:block;background:rgb(255, 214, 198);margin-bottom:4px;padding:4px 8px;">
+
+                                                <tr><td class="align-top" style="min-width:120px;"><b>From: </b></td> <td>{{ tnx.fromAddress }}</td></tr>
+
+                                                    <tr><td class="align-top"><b>To: </b></td> <td>{{ tnx.toAddress }}</td></tr>
+                                                        
+                                                    <tr><td><b>Amount: </b></td> <td>{{ tnx.amount | floatformat:6 }} GCN</td></tr>
+                                                    
+                                                    <tr><td><b>Timestamp: </b></td> <td>{{ tnx.timestamp}}</td></tr>
+                                                    
+                                                    <tr><td><b>Mined on: </b></td> <td>{{ tnx.mined}}</td></tr>
+                                                    
+                                                    <tr><td><b>Reward: </b></td> <td>{{ block.miningReward | floatformat:6}} GCN</td></tr>
+
+                                                    <tr></tr>
+                                                </tbody>
+                                            {% endfor %}
+                                        </tr>
+                                </table>
+                                <!-- <button class="btn no-border bg-silver" style="padding:10px 8px !important;margin:4px;">Check Block Hash</button>
+                                <button class="btn no-border bg-silver" style="padding:10px 8px !important;margin:4px;">Copy Block Hash</button> -->
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <p class="my-2">
+                        <button class="btn btn-primary" onclick="window.location.reload()">Refresh blocks</button>
+                    </p>
+                </div>
+                
+                <!-- Blocks -->
+                <footer classs="flex-fill m-0 bg-white" style="font-size:15px;">
+                    <h6>Developed by <a href="https://github.com/abelakponine">Abel Akponine</a></h6>
+                </footer>
+            </div>
         </div>
     </div>
-    <div class="display-flex">
-        <div class="grid column-5x2 full-height margin-x-auto no-border" style="background:#fafafa;min-height:280px;margin-top:20px !important;">
-            <form>
-                <input placeholder="Enter Glidocoin Recipient Address">
-                <input type="number" placeholder="Amount">
-                <span class="display-flex">
-                    <button class="btn no-border color-white" style="background:rgb(18, 196, 33);padding:10px 8px !important;margin:4px;">Transfer</button>
-                    <button class="btn no-border color-white" style="background:rgb(46, 46, 228);padding:10px 8px !important;margin:4px;">Deposit</button>
-                </span>
-            </form>
-        </div>
-        <div class="grid margin-auto" style="background:#ffe4cf;width:max-content;font-size:15px;font-family:Arial, Helvetica, sans-serif;padding:6px 20px;margin-top:20px !important;">
-            {% for block in Glidocoin.chain %}
-                <table>
-                    {% if block.index == 0 %}
-                        <td><h4>Genesis Block</h4></td><tr>
-                    {% else %}
-                        <td><h4>Block Index: {{block.index}}</h4></td><tr>
-                    {% endif %}
-                    <td><h4 class="display-inline">Previous Hash: &emsp;</h4></td> <td>{{ block.previousHash }} </td><tr>
-                        <td><h4 class="display-inline">Hash: &emsp;</h4></td> <td>{{ block.hash }} </td><tr>
-                    {% with nTxn=block.transactions %}
-                        <td><h4 class="display-inline">No. of Transactions: &emsp;</h4></td> <td>{{ nTxn | length }} </td><tr>
-                    {% endwith %}
-                </table>
-                <table style="max-width:500px;text-align:left;margin-top:10px;">
-                    <thead>
-                        <th class="inline-table" style="min-width:100px;margin-bottom:5px;">Transactions: </th>
-                        <th class="inline-table" style="min-width:100px;margin-bottom:5px;"> Data </th>
-                    </thead>
-                        <tr></tr>
-                        <tr>
-                            {% for tnx in block.transactions %}
-                                <tbody style="display:block;background:rgb(253, 184, 145);margin-bottom:4px;padding:4px 8px;">
-                                    <td style="min-width:110px;"></td>
-                                    <td style="min-width:100px;">From: </td> <td>{{ tnx.fromAddress }}</td><tr>
-                                    <td></td>
-                                    <td>To: </td> <td>{{ tnx.toAddress }}</td><tr>
-                                    <td></td>
-                                    <td>Amount: </td> <td>{{ tnx.amount | floatformat:2 }} GCN</td><tr>
-                                    <td></td>
-                                    <td>Timestamp: </td> <td>{{ tnx.timestamp}}</td><tr>
-                                    <td></td>
-                                    <td>Mined on: </td> <td>{{ tnx.mined}}</td><tr>
-                                    <td></td>
-                                    <td>Reward: </td> <td>{{ block.miningReward}} GCN</td><tr>
-                                    <td></td>
-                                    <tr></tr>
-                                </tbody>
-                            {% endfor %}
-                        </tr>
-                </table>
-                <button class="btn no-border bg-silver" style="padding:10px 8px !important;margin:4px;">Check Block Hash</button>
-                <button class="btn no-border bg-silver" style="padding:10px 8px !important;margin:4px;">Copy Block Hash</button>
-            {% endfor %}
-        </div>
-    </div>
-    <p class="clear-height"></p>
-    <footer class="absolute" style="bottom:10px;left:20px">
-        <h5>Developed by <a href="https://github.com/abelakponine">Abel Akponine</a></h5>
-    </footer>
+
 </body>
 </html>

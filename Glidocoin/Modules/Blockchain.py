@@ -11,6 +11,7 @@
 from Glidocoin.Modules.Wallet import Wallet
 from Glidocoin.Modules.Transaction import Transaction
 from Glidocoin.Modules.Block import Block
+from decimal import Decimal as decimal
 import hashlib, datetime, time, math
 
 class Blockchain():
@@ -21,6 +22,7 @@ class Blockchain():
         self.password = "Akponine"
         self.dateCreated = "31/03/2021 - 3:27 PM"
         self.wallet = None
+        self.genesisAddress = None
         self.wallets = Wallet()
         self.transactions = []
         self.pendingBlocks = []
@@ -66,6 +68,7 @@ class Blockchain():
         wallets = self.wallets
         wallets.createWallet(self.currencyName, self.dateCreated, self.username, self.password)
         gWallet = wallets.findWallet(self.username, self.password)
+        self.genesisAddress = gWallet['walletAddress']
         self.wallet = gWallet
         # instantiate genesis transaction
         txn = Transaction(None, gWallet['walletAddress'], self.totalSupply, self.dateCreated)
@@ -77,6 +80,7 @@ class Blockchain():
         # create genesis transaction and mine genesis block
         if (self.createTransaction(txn,pubKey)):
             self.minePendingBlocks(self.wallet)
+            self.transactions = [] # clear transaction list
         else:
             return False
 
@@ -93,57 +97,73 @@ class Blockchain():
         return True
 
     def createBlock(self):
-        if (len(self.transactions) > 0):
-            storedTxns = self.transactions
-            self.transactions = []
-            block = Block(storedTxns, datetime.datetime.now().strftime("%d/%m/%Y - %I:%M %p"), str(self.getPreviousHash())).getBlock()
-            block.calculate_hash()
-            # add block to pending block list
-            self.addTransactionBlock(block)
-            print("\r\n\033[1;92mNew block created!\033[0m\r\n")
-            # delay block creation for 3 mins
-            print("\r\033[1;92mPreparing to create block in "+str(block.miningDuration)+" seconds, please wait...\033[0m")
+        # if (len(self.transactions) > 0):
+        storedTxns = self.transactions.copy()
+        self.transactions = []
+        block = Block(storedTxns, datetime.datetime.now().strftime("%d/%m/%Y - %I:%M %p"), str(self.getPreviousHash())).getBlock()
+        block.calculate_hash()
+        block.miningReward = (((block.miningReward/5)*10)/60)
+
+        # add block to pending block list
+        self.addTransactionBlock(block)
+        print("\r\n\033[1;92mNew block created!\033[0m\r\n")
+
+        # delay block creation for 10 seconds
+        print("\r\033[1;92mPreparing to create block in "+str(block.miningDuration)+" seconds, please wait...\033[0m")
+        
+        miningDuration = int(block.miningDuration/30)
+        
+        # if (len(self.chain) == 0):
+        for timer in range(0, miningDuration):
             
-            miningDuration = block.miningDuration
-            if (len(self.chain) == 0):
-                miningDuration = 0
-            for timer in range(0, 3):
-                
-                if ((block.miningDuration - timer) > 60):
-                    print("\033[1;92mTimer: "+str(block.miningDuration - timer)+" ("+str(math.ceil((block.miningDuration - timer)/60))+" minutes)", end="\r")
-                elif ((block.miningDuration - timer) > 1):
-                    print("\033[1;92mTimer: "+str(block.miningDuration - timer)+" seconds ", end="\r")
-                else:
-                    print("\033[1;92mTimer: "+str(block.miningDuration - timer)+" second ", end="\r")
-                time.sleep(1)
+            if ((miningDuration - timer) > 60):
+                print("\033[1;92mTimer: "+str(miningDuration - timer)+" ("+str(math.ceil((block.miningDuration - timer)/60))+" minutes)", end="\r")
+            elif ((miningDuration - timer) > 1):
+                print("\033[1;92mTimer: "+str(miningDuration - timer)+" seconds ", end="\r")
+            else:
+                print("\033[1;92mTimer: "+str(miningDuration - timer)+" second ", end="\r")
+            time.sleep(1)
+            
+        # add block to pending block list
+        self.addTransactionBlock(block)
+        print("\r\n\033[1;92mNew block created!\033[0m\r\n")
 
     def minePendingBlocks(self, wallet):
 
         self.createBlock() # create new pending block
 
         if (len(self.pendingBlocks) > 0):
+            pendingBlocks = self.pendingBlocks.copy()
+            self.pendingBlocks = [] # clear pending block list after mining
+            self.validateBlocks(pendingBlocks)
 
-            self.validateBlocks(self.pendingBlocks)
-
-            for block in self.pendingBlocks:
+            for block in pendingBlocks:
                 walletLength = len(self.getWallets().wallets)
                 block.setMiningReward(walletLength)
                 block.setDifficulty(walletLength)
+
                 # miner's reward transaction
-                mTxn = Transaction(None, wallet['walletAddress'], block.miningReward, block.timestamp)
+                global_wallet = self.getWallets()
+                mTxn = Transaction(self.genesisAddress, wallet['walletAddress'], block.miningReward, block.timestamp)
+                prvKey = global_wallet.loadPrvKey(wallet['hash'])
+                pubKey = prvKey.verifying_key
+                mTxn.signTransaction(prvKey)
+
                 # add miner's transaction to block
                 block.addTransaction(mTxn)
                 block.calculate_hash()
                 
                 if (block.mine()):
                     try:
-                        if (block in self.pendingBlocks and block not in self.chain):
+                        if (block in pendingBlocks and block not in self.chain):
                             self.chain.append(block)
-                            self.pendingBlocks.remove(block)
+                            pendingBlocks.remove(block)
                             print("\033[1;96mBlock mined!\033[0m")
-                            print("\033[1;96mCurrent balance: \033[1;93m"+"{:.6f}".format(self.getBalanceOf(wallet['walletAddress']))+" GCN\033[0m ("+str(self.to_okies(self.getBalanceOf(wallet['walletAddress'])))+" Okies)\r\n")
+                            print("\033[1;96mCurrent balance: \033[1;93m"+"{:.6f}".format(self.getBalanceOf(wallet['walletAddress']))+" GCN\033[0m ("+str(self.to_okies(self.getBalanceOf(wallet['walletAddress'])))+" Okies)")
+                            print("\033[1;96mSystem balance: \033[1;93m"+"{:.6f}".format(self.getBalanceOf(self.genesisAddress))+" GCN\033[0m ("+str(self.to_okies(self.getBalanceOf(wallet['walletAddress'])))+" Okies)\r\n")
+                            print(self.genesisAddress)
 
-                        elif (block in self.pendingBlocks and block in self.chain):
+                        elif (block in pendingBlocks and block in self.chain):
                             self.pendingBlocks.remove(block)
                         else:
                             print("Oops! block is gone")
@@ -154,8 +174,6 @@ class Blockchain():
                 # update mined timestamp
                 for txn in block.transactions:
                     txn.mined = datetime.datetime.now().strftime("%d/%m/%Y - %I:%M %p")
-                    
-                return block
         else:
             print("\033[93mNo pending transaction available at the moment.\033[0m\r\n")
             
@@ -201,14 +219,15 @@ class Blockchain():
         return True
 
     def getBalanceOf(self, walletAddress):
+        global balance
         balance = 0
         if (len(self.getChains()) > 0):
             for block in self.getChains():
                 for txn in block.getTransactions():
                     if (txn.fromAddress == walletAddress):
-                        balance -= txn.amount
+                        balance = (decimal(balance) - decimal(txn.amount))
                     elif (txn.toAddress == walletAddress):
-                        balance += txn.amount
+                        balance += decimal(txn.amount)
         return balance
     
     def startMainer(self, wallet):
@@ -217,18 +236,9 @@ class Blockchain():
             global_wallet = self.getWallets()
             # initialize wallet
             myWallet = global_wallet.findWallet(wallet['username'], wallet["password"])
-            prvKey = global_wallet.loadPrvKey(myWallet['hash'])
-            pubKey = prvKey.verifying_key
-            date = datetime.datetime.now().strftime("%d/%m/%Y - %I:%M %p")
-
-            tx1 = Transaction(self.getAddress(), myWallet['walletAddress'], 0, date)
-            tx1.signTransaction(prvKey)
-
-            self.createTransaction(tx1,pubKey)
-            self.createBlock()
-            self.minePendingBlocks(wallet)
+            self.minePendingBlocks(myWallet)
             time.sleep(1)
-            print(self.getBalanceOf(wallet['walletAddress']))
+            print(self.getBalanceOf(self.genesisAddress))
 
             if (wallet['status'] != "mining"):
                 break
