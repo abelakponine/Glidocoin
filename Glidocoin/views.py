@@ -19,7 +19,7 @@ def init(req):
     blockchain = Glidocoin.blockchain
     blockchain.createGenesisBlock()
     Glidocoin.wallets = blockchain.getWallets()
-    Glidocoin.wallets.createWallet("Abel Akponine", "17/04/1993", "kingabel", "1234")
+    Glidocoin.wallets.createWallet("Abel Akponine", "17/04/2021", "kingabel", "1234")
     Glidocoin.myWallet = Glidocoin.wallets.findWallet("kingabel", "1234")
     return HttpResponse(Glidocoin.status)
 
