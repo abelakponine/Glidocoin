@@ -9,9 +9,11 @@ fetch("https://glidocoin-miner.herokuapp.com/myWallet/", {
         username: "kingabel",
         password: "Exploxi2"
     })
-}).then(async res=>{
+}).then(res=>{
     res.json().then(val=>{
-        $("#walletAddress").text(val['walletAddress'])
+        $("#wallet_address").text(val['walletAddress'])
+        $("#start_miner").attr("onclick", "startMiner(this, '"+val['walletAddress']+"')")
+        $("#stop_miner").attr("onclick", "stopMiner(this, '"+val['walletAddress']+"')")
         $("#account_status").html("<b style='text-transform:capitalize'><small>Account status: &nbsp; "+val['status']+"</small></b>");
     })
 })

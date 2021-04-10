@@ -22,7 +22,9 @@ window.startMiner = (elem, walletAddr)=>{
     $(elem2).css('background', 'rgb(230, 13, 60)');
     elem2.disabled = false;
     $("#account_status").html("<b style='text-transform:capitalize'><small>Account status: &nbsp; Mining</small></b>");
-    $.get("https://glidocoin-miner.herokuapp.com/startMiner/"+walletAddr)
+    $.get("https://glidocoin-miner.herokuapp.com/startMiner/"+walletAddr, (res)=>{
+        console.log(res)
+    })
 }
 window.stopMiner = (elem, walletAddr)=>{
     elem.disabled = true;

@@ -77,9 +77,9 @@ def getBalanceOf(req, wallet_addr):
 def getWallet(req):
     cred = json.loads(req.body.decode())
     wallet = Glidocoin.wallets.findWallet(cred['username'], cred['password'])
-    if ('signature' in wallet):
-        del wallet['signature']
-    if ('password' in wallet):
-        del wallet['password']
-    print(json.dumps(wallet))
-    return HttpResponse(json.dumps(wallet))
+    myWallet = wallet
+    if ('signature' in myWallet):
+        del myWallet['signature']
+    if ('password' in myWallet):
+        del myWallet['password']
+    return HttpResponse(json.dumps(myWallet))
