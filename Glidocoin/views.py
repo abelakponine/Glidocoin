@@ -38,14 +38,12 @@ def home(req):
     dict = {
         "Glidocoin": blockchain
     }
+    print(Glidocoin.myWallet)
     return render(req, 'index.html', dict)
 
 def startMainer(req, wallet_addr):
 
-    print("")
-    print(blockchain)
     myWallet = Glidocoin.myWallet
-    print(myWallet)
     
     if (wallet_addr == myWallet['walletAddress']):
         blockchain.startMainer(myWallet)
@@ -78,9 +76,10 @@ def getBalanceOf(req, wallet_addr):
 def getWallet(req):
     cred = json.loads(req.body.decode())
     wallet = Glidocoin.wallets.findWallet(cred['username'], cred['password'])
-    myWallet = wallet
+    myWallet = wallet.copy()
     if ('signature' in myWallet):
         del myWallet['signature']
     if ('password' in myWallet):
         del myWallet['password']
+
     return HttpResponse(json.dumps(myWallet))
