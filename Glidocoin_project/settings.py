@@ -55,10 +55,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'Glidocoin_project.urls'
 
-CORS_ALLOWED_ORIGINS = [
-    "https://glidocoin-miner.herokuapp.com",
-    "https://glidocoin.herokuapp.com"
-]
 
 TEMPLATES = [
     {
@@ -122,6 +118,11 @@ USE_L10N = True
 
 USE_TZ = True
 
+# CORS_ALLOWED_ORIGINS = [
+#     "https://glidocoin-miner.herokuapp.com",
+#     "https://glidocoin.herokuapp.com",
+# ]
+CORS_ORIGIN_ALLOW_ALL = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
