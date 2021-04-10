@@ -75,10 +75,11 @@ def getBalanceOf(req, wallet_addr):
 
 @csrf_exempt
 def getWallet(req):
-    cred = json.loads(req.body.decode())['username']
+    cred = json.loads(req.body.decode())
     wallet = Glidocoin.wallets.findWallet(cred['username'], cred['password'])
     if ('signature' in wallet):
         del wallet['signature']
     if ('password' in wallet):
         del wallet['password']
+    print(json.dumps(wallet))
     return HttpResponse(json.dumps(wallet))
