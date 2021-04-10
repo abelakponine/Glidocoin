@@ -6,5 +6,6 @@ urlpatterns = [
     path('stopMiner/<wallet_addr>/', views.stopMainer),
     path('balance/<wallet_addr>/', views.getBalanceOf),
     path('Glidocoin-start/', views.init),
+    path('myWallet/', views.getWallet),
     path('', views.home),
 ]

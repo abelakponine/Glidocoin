@@ -6,6 +6,7 @@ from Glidocoin.Modules.Wallet import Wallet
 from Glidocoin.Modules.Transaction import Transaction
 from .Modules.Glidocoin import Glidocoin
 import hashlib, ecdsa, json, datetime, random
+from django.views.decorators.csrf import csrf_exempt
 
 print(Glidocoin.status)
 
@@ -26,9 +27,6 @@ def init(req):
 
 # Create your views here.
 def home(req):
-    print("")
-    print(Glidocoin)
-    print(blockchain)
     
     for block in blockchain.getChains():
         block.index = blockchain.getChains().index(block)
@@ -67,8 +65,6 @@ def stopMainer(req, wallet_addr):
 def getBalanceOf(req, wallet_addr):
 
     myWallet = Glidocoin.myWallet
-    print("")
-    print(myWallet)
 
     if (wallet_addr == myWallet['walletAddress']):
         balance = blockchain.getBalanceOf(myWallet['walletAddress'])
@@ -77,5 +73,11 @@ def getBalanceOf(req, wallet_addr):
         print("Invalid Wallet")
     return HttpResponse("data:0", content_type='text/event-stream')
 
-def _404_view(req):
-    return HttpResponse("<h1>404 Not Found</h1>")
+@csrf_exempt
+def getWallet(req):
+    wallet = Glidocoin.wallets.findWallet("kingabel", "Exploxi2")
+    if ('signature' in wallet):
+        del wallet['signature']
+    if ('password' in wallet):
+        del wallet['password']
+    return HttpResponse(json.dumps(wallet))
